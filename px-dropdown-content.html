@@ -266,7 +266,7 @@ limitations under the License.
        */
       searchTerm: {
         type: String,
-        observer: '_computeFilter'
+        observer: '_onSearchTermChanged'
       },
       /**
        * What to sort the dropdown items by - one of "key" or "val".
@@ -631,10 +631,35 @@ limitations under the License.
       this.$.dropdown.notifyResize();
     },
     /**
+     * Observer function that gets called when search term changes.
+     */
+     _onSearchTermChanged: function () {
+      /**
+       * Event fired when search term is changed.
+       * `evt.detail` contains:
+       * ```
+       * { val: "text of the changed element",
+       *   key: "key of the changed element",
+       * }
+       * ```
+       * @event search-term-changed
+       */
+      this.fire('search-term-changed', {
+        val: this.searchTerm,
+        key: this.searchTerm
+      });
+
+      this._computeFilter();
+    },
+    /**
      * Filter function used by the dom-repeat inside the iron-selector,
      * based on the searchTerm entered in the search box.
      */
     _computeFilter: function () {
+      this.fire('search-term-changed', {
+        val: this.searchTerm,
+        key: this.searchTerm
+      });
       if (this.searchMode) {
         var term = this.searchTerm.toLowerCase(),
             items = this.$.dropdown.querySelectorAll('.dropdown-option'),
